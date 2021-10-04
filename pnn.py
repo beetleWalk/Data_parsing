@@ -28,14 +28,14 @@ def correct_date(date_field):
 
     day = result.day
     month = result.month
-    year = result.year
+    year = str(result.year)
 
     if year > curr_year[-2:]:
         year = "19" + year
     else:
         year = "20" + year
 
-    if year > curr_year or year < 1900:
+    if year > curr_year or year < "1900":
         return empty
 
     if day > 30 and month not in month_31:
@@ -87,11 +87,11 @@ def zipcode_modif():
 
 
 def deIdentify_data(dataframe):
-    #call add_age_col
+    call add_age_col
 
     dataframe.drop(columns=['Date of Service', 'Date of Birth'])
 
-    #call zip_code_modif
+    call zip_code_modif
 
 
 
