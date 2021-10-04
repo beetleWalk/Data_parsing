@@ -11,6 +11,29 @@ def correct_date(date_field):
     month_31 = [1, 3, 5, 7, 8, 10, 12]
     month_30 = [4, 6, 9, 11]
 
+    # Check that the date field is in the format of either M/DD/YY or MM/DD/YY
+
+    import re
+
+    # Matching capital letters
+
+    str = "01/09/02"
+    # all = re.findall(r"[1-9]|[[1][0-2]]/[\d]{1,2}/[\d]{2}", str)
+    # prog = re.compile(r"[1-9]|[1|2][0-9]/[1-9]|[1|2][0-9]|[3][0|1]/[0-9]{2}")
+    prog = re.match(r"[1-9]|[1|2][0-9]/[1-9]|[1|2][0-9]|[3][0|1]/[0-9]{2}", "01/09/02")
+    result = prog.match(string)
+
+    # [1-9] this is if the month is between 1 and 9
+    # [1][0-2] this is if the month is 10, 11, or 12
+
+    for s in all:
+        print(s)
+
+    # try:
+    #     datetime.datetime.strptime(date_field, "%m/%d/%y")
+    # except ValueError as err:
+    #     print(err)
+
     month, day, year = date_field.split('/')
 
     if year > curr_year or year < 0:
@@ -28,9 +51,16 @@ def correct_date(date_field):
 
 def correct_gender(gender_field):
     gender = gender_field.conversion()
-    if gender != "male" or gender != "female":
-        gender_field = ''
-
+    if gender != "male" and gender != "female":
+        male_set = ['m', 'a', 'l', 'e']
+        # Check for gender containing all characters in string "male"
+        if 0 not in [char in gender for char in male_set]:
+            if "f" in gender:
+                return "Female"
+            else:
+                return "Male"
+        else:
+            return "Unknown"
 
 def age_calc(service_field):
     service_date = service_field
@@ -50,7 +80,7 @@ def parse_csv(csv_file, date_cols, gender_col):
 def deIdentify_data():
     #add column for age at service
     #remove date of birth and service
-    #
+    # keep three initial zipcode digits
 
 
 if __name__ == '__main__':
