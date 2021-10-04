@@ -62,6 +62,8 @@ def correct_gender(gender_field):
         else:
             return "Unknown"
 
+    return gender_field
+
 def age_calc(service_field):
     service_date = service_field
     current_date = datetime.datetime.now()
@@ -92,8 +94,6 @@ def deIdentify_data(dataframe):
     dataframe.drop(columns=['Date of Service', 'Date of Birth'])
 
     call zip_code_modif
-
-
 
 if __name__ == '__main__':
     csv_file = "AssignmentData.csv"
