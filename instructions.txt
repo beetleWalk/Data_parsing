@@ -2,9 +2,14 @@ INSTRUCTIONS:
 
 1) Tidy data
 Attached is a data file called “Assignment Data.csv.”
-The data in “Assignment Data.csv” are unstructured, single entered data. Please write a script that checks Date of Service,
-Date of Birth and gender2 fields for obvious errors. Delete any dates that are unreasonable and correct any misspellings
-in the gender 2 column.
+The data in “Assignment Data.csv” are unstructured, single entered data.
+
+Please write a script that:
+
+* Checks Date of Service, Date of Birth and gender2 fields for obvious errors.
+* Delete any dates that are unreasonable.
+* Correct any misspellings in the gender 2 column.
+
 Please output “Assignment Data Cleaned.csv.”
 Please write out a plain text file containing a log of any edits made to the data.
 
