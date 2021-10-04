@@ -1,53 +1,53 @@
 import pandas as pd
 import datetime
+import re
+import calendar
+
+PATTERN = r"([1-9]|[1][0-2])/([1-9]|[1|2][0-9]|[3][0|1])/([0-9]{2})"
+REGEX = re.compile(PATTERN)
 
 def conversion(text):
     return text.lower()
 
 def correct_date(date_field):
-    current_date = datetime.datetime.now()
-    date = current_date.date()
-    curr_year = date.strftime("%Y")
+    current_date = datetime.datetime.now().date()
+    curr_year = current_date.strftime("%Y")
     month_31 = [1, 3, 5, 7, 8, 10, 12]
-    month_30 = [4, 6, 9, 11]
+    empty = ''
 
     # Check that the date field is in the format of either M/DD/YY or MM/DD/YY
+    match = REGEX.match(date_field)
 
-    import re
+    if match:
+        try:
+            result = datetime.datetime.strptime(date_field, "%m/%d/%y")
+        except ValueError:
+            return empty
+    else:
+        return empty
 
-    # Matching capital letters
+    day = result.day
+    month = result.month
+    year = result.year
 
-    str = "01/09/02"
-    # all = re.findall(r"[1-9]|[[1][0-2]]/[\d]{1,2}/[\d]{2}", str)
-    # prog = re.compile(r"[1-9]|[1|2][0-9]/[1-9]|[1|2][0-9]|[3][0|1]/[0-9]{2}")
-    prog = re.match(r"[1-9]|[1|2][0-9]/[1-9]|[1|2][0-9]|[3][0|1]/[0-9]{2}", "01/09/02")
-    result = prog.match(string)
+    if year > curr_year[-2:]:
+        year = "19" + year
+    else:
+        year = "20" + year
 
-    # [1-9] this is if the month is between 1 and 9
-    # [1][0-2] this is if the month is 10, 11, or 12
+    if year > curr_year or year < 1900:
+        return empty
 
-    for s in all:
-        print(s)
+    if day > 30 and month not in month_31:
+        return empty
 
-    # try:
-    #     datetime.datetime.strptime(date_field, "%m/%d/%y")
-    # except ValueError as err:
-    #     print(err)
+    if month == 2:
+        if calendar.isleap(year) and day > 29:
+            return empty
+        elif day > 28:
+            return empty
 
-    month, day, year = date_field.split('/')
-
-    if year > curr_year or year < 0:
-        date_field = 'None'
-
-    if month < 1 or month > 12:
-        date_field = 'None'
-
-    if day < 1 or (day > 31 and month not in month_31):
-        date_field = 'None'
-
-    if day < 1 or (day > 30 and month not in month_30):
-        date_field = 'None'
-
+    return date_field
 
 def correct_gender(gender_field):
     gender = gender_field.conversion()
