@@ -82,7 +82,7 @@ def add_age_col(service_field):
         age_at_service = age_calc()
         service_age.append(age_at_service)
 
-    deIdentified_data = df.assign(service_age)
+    deIdentified_data = original_df.assign(service_age)
     return deIdentified_data
 
 
@@ -92,17 +92,14 @@ def zipcode_modif(zipcode_field):
     return zipcode_init
 
 
-def join_df(df1, df2):
-    merged_df = merge(df1, df2, on='Race', how='left')
+def join_df(original_df, extra_df):
+    merged_df = pd.merge(original_df, extra_df, on='Race', how='left')
     return merged_df
 
 
 def parse_csv(csv_file, date_cols, gender_col):
     df = pd.read_csv(csv_file)
-    for col in date_cols:
-        df[col] = df[col].apply(correct_date)
-
-    df[gender_col] = df[gender_col].apply(correct_gender)
+    return df
     # print(df["Subject"])
 
 
@@ -119,4 +116,38 @@ if __name__ == '__main__':
     csv_file = "AssignmentData.csv"
     date_cols = ["Date of Service", "Date of Birth"]
     gender_col = "gender2"
-    parse_csv(csv_file, date_cols, gender_col)
+    original_df = parse_csv(csv_file, date_cols, gender_col)
+
+    #correct gender misspelling
+    original_df[gender_col] = original_df[gender_col].apply(correct_gender)
+
+    #check for date errors
+    for col in date_cols:
+        original_df[col] = original_df[col].apply(correct_date)
+
+    #save cleaned dataset to Assignment Data Cleaned.csv without index column
+    original_df.to_csv("Assignment Data Cleaned.csv", index=False)
+
+    #load income dataset
+    income_df = parse_csv(csv_file)
+
+    #left join cleaned dataset with income dataset
+    joined_df = join_df(original_df, income_df)
+
+    deIdentified_df = original_df.apply(add_age_col("Date of Service"))
+
+    deIdentified_df = deIdentified_df.apply(zipcode_modif("Zipcode"))
+
+    deIdentified_df = deIdentified_df.apply(deidentify_data(deIdentified_df))
+
+
+
+
+
+
+
+
+
+
+
+
