@@ -69,6 +69,12 @@ def age_calc(service_field):
     service_age = today.year - service_date.year - ((today.month, today.day) < (service_date.month, service_date.day))
     return service_age
 
+
+def add_age_col(dataframe):
+    age_at_service = age_calc()
+    deIdentified_data = dataframe.assign(age_at_service)
+    return deIdentified_data
+
 def parse_csv(csv_file, date_cols, gender_col):
     df = pd.read_csv(csv_file)
     for col in date_cols:
@@ -77,10 +83,16 @@ def parse_csv(csv_file, date_cols, gender_col):
     df[gender_col] = df[gender_col].apply(correct_gender)
     # print(df["Subject"])
 
-def deIdentify_data():
-    #add column for age at service
-    #remove date of birth and service
-    # keep three initial zipcode digits
+def zipcode_modif():
+
+
+def deIdentify_data(dataframe):
+    #call add_age_col
+
+    dataframe.drop(columns=['Date of Service', 'Date of Birth'])
+
+    #call zip_code_modif
+
 
 
 if __name__ == '__main__':
