@@ -6,8 +6,10 @@ import calendar
 PATTERN = r"([1-9]|[1][0-2])/([1-9]|[1|2][0-9]|[3][0|1])/([0-9]{2})"
 REGEX = re.compile(PATTERN)
 
+
 def conversion(text):
     return text.lower()
+
 
 def correct_date(date_field):
     current_date = datetime.datetime.now().date()
@@ -49,6 +51,7 @@ def correct_date(date_field):
 
     return date_field
 
+
 def correct_gender(gender_field):
     gender = gender_field.conversion()
     if gender != "male" and gender != "female":
@@ -64,6 +67,7 @@ def correct_gender(gender_field):
 
     return gender_field
 
+
 def age_calc(service_field):
     service_date = service_field
     current_date = datetime.datetime.now()
@@ -72,10 +76,26 @@ def age_calc(service_field):
     return service_age
 
 
-def add_age_col(dataframe):
-    age_at_service = age_calc()
-    deIdentified_data = dataframe.assign(age_at_service)
+def add_age_col(service_field):
+    service_age = []
+    for i in service_field:
+        age_at_service = age_calc()
+        service_age.append(age_at_service)
+
+    deIdentified_data = df.assign(service_age)
     return deIdentified_data
+
+
+def zipcode_modif(zipcode_field):
+    # keeps the three initial zipcode digits
+    zipcode_init = zipcode_field.substring[:2]
+    return zipcode_init
+
+
+def join_df(df1, df2):
+    merged_df = merge(df1, df2, on='Race', how='left')
+    return merged_df
+
 
 def parse_csv(csv_file, date_cols, gender_col):
     df = pd.read_csv(csv_file)
@@ -85,15 +105,15 @@ def parse_csv(csv_file, date_cols, gender_col):
     df[gender_col] = df[gender_col].apply(correct_gender)
     # print(df["Subject"])
 
-def zipcode_modif():
 
+def deidentify_data(dataframe):
+    # call add_age_col
 
-def deIdentify_data(dataframe):
-    call add_age_col
-
+    # deletes Date of Birth and Date of Servicec columns
     dataframe.drop(columns=['Date of Service', 'Date of Birth'])
 
-    call zip_code_modif
+    # call zip_code_modif
+
 
 if __name__ == '__main__':
     csv_file = "AssignmentData.csv"
