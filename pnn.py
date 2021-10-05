@@ -53,7 +53,7 @@ def correct_date(date_field):
         return date_log(date_field)
 
     if month == 2:
-        if calendar.isleap(year) and day > 29:
+        if calendar.isleap(int(year)) and day > 29:
             logging.warning("Cannot have day greater than 29 in Feb on a leap year")
             return date_log(date_field)
         elif day > 28:
@@ -64,16 +64,16 @@ def correct_date(date_field):
 
 
 def correct_gender(gender_field):
-    gender = gender_field.conversion()
+    gender = conversion(gender_field)
     if gender != "male" and gender != "female":
         male_set = ['m', 'a', 'l', 'e']
         # Check for gender containing all characters in string "male"
         if 0 not in [char in gender for char in male_set]:
             if "f" in gender:
-                logging.warning("Gender field %s appears to be female and is being correct as such", gender_field)
+                logging.warning("Gender field %s appears to be female and is being corrected as such", gender_field)
                 return "Female"
             else:
-                logging.warning("Gender field  %s appears to be male and is being correct as such", gender_field)
+                logging.warning("Gender field  %s appears to be male and is being corrected as such", gender_field)
                 return "Male"
         else:
             logging.warning("Unable to decipher potential gender from gender field %s, will be overwritten by Unknown",
