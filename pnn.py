@@ -83,9 +83,10 @@ def correct_gender(gender_field):
     return gender_field
 
 
-def age_calc(service_field):
+def age_calc(service_field, birth_date):
     # get year from service date
     service_year = service_field[-2:]
+    birth_year = birth_date[-2:]
     current_date = datetime.datetime.now()
     today_year = current_date.strftime("%Y")
 
@@ -95,23 +96,23 @@ def age_calc(service_field):
     else:
         service_year = "20" + service_year
 
-    service_age = int(today_year) - int(service_year)
-    return service_age
+    service_age = int(service_year) - int(birth_year)
+    return str(service_age)
 
 
-def add_age_col(service_field):
-    service_age = []
-    for i in service_field:
-        age_at_service = age_calc(service_field)
-        service_age.append(age_at_service)
-
-    deIdentified_data = original_df.assign(service_age)
-    return deIdentified_data
+# def add_age_col(service_field):
+#     service_age = []
+#     for i in service_field:
+#         age_at_service = age_calc(service_field)
+#         service_age.append(age_at_service)
+#
+#     deIdentified_data = assignment_df.assign(service_age=service_age)
+#     return deIdentified_data
 
 
 def zipcode_modif(zipcode_field):
     # keeps the three initial zipcode digits
-    zipcode_init = zipcode_field.substring[:2]
+    zipcode_init = str(zipcode_field)[:3]
     return zipcode_init
 
 
@@ -126,40 +127,42 @@ def parse_csv(csv_file):
 
 
 def deidentify_data(dataframe):
-    # call add_age_col
-
-    # deletes Date of Birth and Date of Servicec columns
-    dataframe.drop(columns=['Date of Service', 'Date of Birth'])
-
-    # call zip_code_modif
+    # deletes Date of Birth and Date of Service columns
+    return dataframe.drop(columns=['Date of Service', 'Date of Birth'])
 
 
 if __name__ == '__main__':
     assignment_data = "AssignmentData.csv"
-    median_income = "median_income.csv"
+    median_income = "income.csv"
 
     date_cols = ["Date of Service", "Date of Birth"]
     gender_col = "gender2"
-    original_df = parse_csv(assignment_data)
+    assignment_df = parse_csv(assignment_data)
 
     # correct gender misspelling
-    original_df[gender_col] = original_df[gender_col].apply(correct_gender)
+    assignment_df[gender_col] = assignment_df[gender_col].apply(correct_gender)
 
     # check for date errors
     for col in date_cols:
-        original_df[col] = original_df[col].apply(correct_date)
+        assignment_df[col] = assignment_df[col].apply(correct_date)
 
     # save cleaned dataset to Assignment Data Cleaned.csv without index column
-    original_df.to_csv("Assignment Data Cleaned.csv", index=False)
+    assignment_df.to_csv("Assignment Data Cleaned.csv", index=False)
 
     # load income dataset
     income_df = parse_csv(median_income)
 
     # left join cleaned dataset with income dataset
-    joined_df = join_df(original_df, income_df)
+    joined_df = pd.merge(assignment_df, income_df, left_on='Race', right_on='Race', how='left')
+    # joined_df = join_df(assignment_df, income_df)
 
-    original_df["Date of Service"] = original_df["Date of Service"].apply(add_age_col)
+    joined_df["Age of Service"] = joined_df.apply(lambda x: age_calc(x["Date of Service"], x["Date of Birth"]),
+                                                   axis=1)
 
-    original_df["Zipcode"] = original_df["Zipcode"].apply(zipcode_modif)
+    joined_df["Zipcode"] = joined_df["Zipcode"].apply(zipcode_modif)
 
-    deIdentified_df = original_df.apply(deidentify_data(original_df))
+    # joined_df["Date of Service"] = joined_df["Date of Service"].apply(add_age_col)
+
+    deIdentified_df = deidentify_data(joined_df)
+
+    deIdentified_df.to_csv("Deindentified Data Cleaned.csv", index=False)
