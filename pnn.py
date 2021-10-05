@@ -84,10 +84,18 @@ def correct_gender(gender_field):
 
 
 def age_calc(service_field):
-    service_date = service_field
+    # get year from service date
+    service_year = service_field[-2:]
     current_date = datetime.datetime.now()
-    today = current_date.date()
-    service_age = today.year - service_date.year - ((today.month, today.day) < (service_date.month, service_date.day))
+    today_year = current_date.strftime("%Y")
+
+    if service_year > today_year:
+        service_year = "19" + service_year
+
+    else:
+        service_year = "20" + service_year
+
+    service_age = int(today_year) - int(service_year)
     return service_age
 
 
@@ -112,10 +120,9 @@ def join_df(original_df, extra_df):
     return merged_df
 
 
-def parse_csv(csv_file, date_cols, gender_col):
+def parse_csv(csv_file):
     df = pd.read_csv(csv_file)
     return df
-    # print(df["Subject"])
 
 
 def deidentify_data(dataframe):
@@ -128,10 +135,12 @@ def deidentify_data(dataframe):
 
 
 if __name__ == '__main__':
-    csv_file = "AssignmentData.csv"
+    assignment_data = "AssignmentData.csv"
+    median_income = "median_income.csv"
+
     date_cols = ["Date of Service", "Date of Birth"]
     gender_col = "gender2"
-    original_df = parse_csv(csv_file, date_cols, gender_col)
+    original_df = parse_csv(assignment_data)
 
     # correct gender misspelling
     original_df[gender_col] = original_df[gender_col].apply(correct_gender)
@@ -144,13 +153,13 @@ if __name__ == '__main__':
     original_df.to_csv("Assignment Data Cleaned.csv", index=False)
 
     # load income dataset
-    income_df = parse_csv(csv_file)
+    income_df = parse_csv(median_income)
 
     # left join cleaned dataset with income dataset
     joined_df = join_df(original_df, income_df)
 
-    deIdentified_df = original_df.apply(add_age_col("Date of Service"))
+    original_df["Date of Service"] = original_df["Date of Service"].apply(add_age_col)
 
-    deIdentified_df = deIdentified_df.apply(zipcode_modif("Zipcode"))
+    original_df["Zipcode"] = original_df["Zipcode"].apply(zipcode_modif)
 
-    deIdentified_df = deIdentified_df.apply(deidentify_data(deIdentified_df))
+    deIdentified_df = original_df.apply(deidentify_data(original_df))
