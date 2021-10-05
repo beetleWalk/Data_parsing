@@ -53,7 +53,7 @@ def correct_date(date_field):
 
 
 def correct_gender(gender_field):
-    gender = gender_field.conversion()
+    gender = gender_field
     if gender != "male" and gender != "female":
         male_set = ['m', 'a', 'l', 'e']
         # Check for gender containing all characters in string "male"
@@ -79,7 +79,7 @@ def age_calc(service_field):
 def add_age_col(service_field):
     service_age = []
     for i in service_field:
-        age_at_service = age_calc()
+        age_at_service = age_calc(service_field)
         service_age.append(age_at_service)
 
     deIdentified_data = original_df.assign(service_age)
